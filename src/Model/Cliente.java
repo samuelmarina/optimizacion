@@ -23,6 +23,23 @@ public class Cliente extends Thread{
     }
     @Override
     public void run(){
-
+        try {
+            if(gama.semColaEntrar.availablePermits() == 0){
+                System.out.println(id + " en cola");
+            }
+            gama.semColaEntrar.acquire();
+            System.out.println(id + " ha entrado al Gama");
+            sleep(3000);
+            System.out.println(id + " ha salido del Gama");
+            gama.semColaEntrar.release();
+            
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+//        gama.nuevoCliente(id);
+//            System.out.println("El cliente " + id + " ha entrado al Gama");
+//            sleep(5000);
+//            System.out.println("El cliente " + id + " ha salido del Gama");
     }
 }
