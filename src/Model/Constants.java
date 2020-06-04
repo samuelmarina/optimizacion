@@ -10,5 +10,41 @@ package Model;
  * @author SamuelLMiller
  */
 public class Constants {
+    //Hora
+    public int hora;
     
+    //Estantes
+    public int estantesIniciales;
+    public int maxEstantes;
+    public int capacidadMaxEstantes;
+    
+    //Cajas
+    public int cajasIniciales;
+    public int maxCajas;
+    
+    //Carritos
+    public int carritosIniciales;
+    public int maxCarritos;
+    
+    //Singleton
+    private static final Constants shared = new Constants();
+    
+    private Constants(){
+        
+    }
+    
+    public static Constants shared(){
+        return shared;
+    }
+
+    public void prepare(int hora, int estantesIniciales, int maxEstantes, int capacidadMaxEstantes, int cajasIniciales, int maxCajas, int carritosIniciales, int maxCarritos) {
+        this.hora = hora;
+        this.estantesIniciales = estantesIniciales;
+        this.maxEstantes = maxEstantes;
+        this.capacidadMaxEstantes = capacidadMaxEstantes;
+        this.cajasIniciales = cajasIniciales;
+        this.maxCajas = maxCajas;
+        this.carritosIniciales = carritosIniciales;
+        this.maxCarritos = maxCarritos;
+    }
 }
