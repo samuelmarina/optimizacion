@@ -7,8 +7,11 @@ package Controller;
 
 import Model.Cliente;
 import Model.Constants;
+import Model.Estante;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
@@ -32,7 +35,8 @@ public class Gama {
     Semaphore semCajasR;
     
     //Estantes
-    int estantes;
+//    int estantes;
+    public List<Estante> estantes;
     Semaphore semEstantes;
     
     int ganancias;
@@ -51,16 +55,17 @@ public class Gama {
     
     public Constants k;
     
-    public Gama(JTextField f){
-        
-    }
-    
     public Gama(JTextField estantesTxt, JTextField carritosTxt, JTextField cajasTxt,
             JTextField clientesColaTxt, JTextField clientesSistemaTxt, JTextField horasLaboralesTxt, JTextField gananciasTxt, Constants k){
         this.k = k;
         this.carritos = k.carritosIniciales;
         this.cajas = k.cajasIniciales;
-        this.estantes = k.estantesIniciales;
+        
+        estantes = new ArrayList<>();
+        for(int i = 0; i < k.estantesIniciales; i++){
+            estantes.add(new Estante(this, i));
+        }
+
         
         this.semColaEntrar = new Semaphore(k.carritosIniciales);
         this.semCajasR = new Semaphore(k.cajasIniciales);
@@ -81,8 +86,7 @@ public class Gama {
      */
     public void nuevoCliente(Cliente cliente){
         colaClientes.add(cliente);
-        clientesColaTxt.setText(""+colaClientes.size()); //Verificar si colocar size o aumentar en 1
-        entrarSistema();
+        clientesColaTxt.setText(""+colaClientes.size());
     }
     
     /**
@@ -96,20 +100,68 @@ public class Gama {
     /**
      * En caso de haber, adentra un cliente al Gama
      */
-    public void entrarSistema(){
+    public void entrarSistema(Cliente cliente){
         try {
-            if(hayClienteCola()){
-                semColaEntrar.acquire();    //La persona agarra el carrito
-                Cliente cl = colaClientes.poll();   //Se sale de la cola de espera
-                System.out.println(cl.id);
-                clientesSistema.add(cl);    //Ahora se encuentra dentro del Gama
-                clientesSistemaTxt.setText(""+clientesSistema.size());
+            boolean flag = false;
+            //En cola si no hay carritos
+            if(semColaEntrar.availablePermits() == 0){
+                int totalClientes = Integer.parseInt(clientesColaTxt.getText()) + 1;
+                clientesColaTxt.setText(""+totalClientes);
+                flag = true;
+                System.out.println("El cliente " + cliente.id + " esta en cola");
             }
+            
+            //La persona agarra el carrito
+            semColaEntrar.acquire();
+            System.out.println("El cliente " + cliente.id + " entro al Gama");
+            //Si estaba en cola, actualizo el txt
+            if(flag){
+                int totalClientes = Integer.parseInt(clientesColaTxt.getText()) - 1;
+                clientesColaTxt.setText(""+totalClientes);
+            }
+            
+            clientesSistema.add(cliente);    //Ahora se encuentra dentro del Gama
+            
+            //Actualizo el txt de clientes en sistema
+            clientesSistemaTxt.setText("" + clientesSistema.size());
         }
         catch (InterruptedException ex) {
             ex.printStackTrace();
         }
     }
     
+    public void pasarEstante(Cliente cl, Estante est){
+        if(cl == null) return;
+        
+        try {
+            est.semaforo.acquire();
+            System.out.println("El cliente " + cl.id + " esta en el estante " + est.id);
+            est.sleep(6000);    //Modificar basandonos en la hora
+            
+            System.out.println("Hay " + est.productos + " productos en el estante " + est.id);
+            //Todos los productos que va a agarrar
+            int totalProductos = randomNum(est.productos);
+            
+            System.out.println("El cliente " + cl.id + " agarro " + totalProductos + " productos");
+            est.productos -= totalProductos;
+            
+            System.out.println("Ahora quedan " + est.productos + " productos");
+            
+            for(int i = 0; i < totalProductos; i++){
+                //Asignar precio
+                cl.cesta += randomNum(10) + 1;
+                
+            }
+            System.out.println("El cliente " + cl.id + " salio del estante " + est.id);
+            est.semaforo.release();
+            cl.resume();
+            
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+    }
     
+    public int randomNum(int max) {
+        return (int) (Math.random() * max);
+    }
 }

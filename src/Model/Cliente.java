@@ -15,14 +15,26 @@ import java.util.logging.Logger;
  */
 public class Cliente extends Thread{
     public int id;
+    public int cesta;
     Gama gama;
     
     public Cliente(int id, Gama gama){
         this.id = id;
         this.gama = gama;
+        this.cesta = 0;
     }
     @Override
     public void run(){
-        gama.nuevoCliente(this);
+        //Entramos al sistema pasando por la cola
+        gama.entrarSistema(this);
+        
+        //Pasamos por todos los estantes
+        for(Estante est : gama.estantes){
+            est.colaEstante.add(this);
+            if(!est.isAlive()){
+                est.start();
+            }
+            this.suspend(); //Pausamos el hilo hasta que termine de recorrer el estante
+        }
     }
 }
