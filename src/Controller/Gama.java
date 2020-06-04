@@ -5,6 +5,9 @@
  */
 package Controller;
 
+import Model.Cliente;
+import Model.Constants;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.Semaphore;
@@ -18,11 +21,11 @@ import javax.swing.JTextField;
  */
 public class Gama {
     //Cola para entrar
-    Queue colaClientes = new LinkedList<>();
+    public Queue<Cliente> colaClientes = new LinkedList<>();
     public Semaphore semColaEntrar;
     
     //Clientes en sistema
-    Queue clientesSistema = new LinkedList<>();
+    public HashSet<Cliente> clientesSistema = new HashSet<>();
     
     //Cola para cajas registradoras
     Queue colaCajas = new LinkedList<>();
@@ -46,14 +49,21 @@ public class Gama {
     public JTextField horasLaboralesTxt;
     public JTextField gananciasTxt;
     
-    public Gama(int carritos, int cajas, int estantes, JTextField estantesTxt, JTextField carritosTxt, JTextField cajasTxt,
-            JTextField clientesColaTxt, JTextField clientesSistemaTxt, JTextField horasLaboralesTxt, JTextField gananciasTxt){
-        this.carritos = carritos;
-        this.cajas = cajas;
-        this.estantes = estantes;
+    public Constants k;
+    
+    public Gama(JTextField f){
         
-        this.semColaEntrar = new Semaphore(carritos);
-        this.semCajasR = new Semaphore(cajas);
+    }
+    
+    public Gama(JTextField estantesTxt, JTextField carritosTxt, JTextField cajasTxt,
+            JTextField clientesColaTxt, JTextField clientesSistemaTxt, JTextField horasLaboralesTxt, JTextField gananciasTxt, Constants k){
+        this.k = k;
+        this.carritos = k.carritosIniciales;
+        this.cajas = k.cajasIniciales;
+        this.estantes = k.estantesIniciales;
+        
+        this.semColaEntrar = new Semaphore(k.carritosIniciales);
+        this.semCajasR = new Semaphore(k.cajasIniciales);
         this.semEstantes = new Semaphore(1);
         
         this.estantesTxt = estantesTxt;
@@ -65,8 +75,41 @@ public class Gama {
         this.gananciasTxt = gananciasTxt;
     }
     
-    public boolean isClientesPendiente(){
+    /**
+     * Agrega un nuevo cliente a la cola y actualiza el TextField
+     * @param cliente : cliente a agregar
+     */
+    public void nuevoCliente(Cliente cliente){
+        colaClientes.add(cliente);
+        clientesColaTxt.setText(""+colaClientes.size()); //Verificar si colocar size o aumentar en 1
+        entrarSistema();
+    }
+    
+    /**
+     * Comprueba si hay clientes esperando entrar
+     * @return true si hay clientes en espera
+     */
+    public boolean hayClienteCola(){
         return colaClientes.size() > 0;
     }
+    
+    /**
+     * En caso de haber, adentra un cliente al Gama
+     */
+    public void entrarSistema(){
+        try {
+            if(hayClienteCola()){
+                semColaEntrar.acquire();    //La persona agarra el carrito
+                Cliente cl = colaClientes.poll();   //Se sale de la cola de espera
+                System.out.println(cl.id);
+                clientesSistema.add(cl);    //Ahora se encuentra dentro del Gama
+                clientesSistemaTxt.setText(""+clientesSistema.size());
+            }
+        }
+        catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+    }
+    
     
 }
