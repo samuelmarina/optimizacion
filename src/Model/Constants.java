@@ -26,6 +26,13 @@ public class Constants {
     public int carritosIniciales;
     public int maxCarritos;
     
+    //Retardos
+    public int retardoEstante;
+    public int retardoCaja;
+    public int retardoGanancias;
+    public int retardoDevCarrito;
+    public int retardoEmpleado;
+    
     //Singleton
     private static final Constants shared = new Constants();
     
@@ -37,7 +44,8 @@ public class Constants {
         return shared;
     }
 
-    public void prepare(int hora, int estantesIniciales, int maxEstantes, int capacidadMaxEstantes, int cajasIniciales, int maxCajas, int carritosIniciales, int maxCarritos) {
+    public void prepare(int hora, int estantesIniciales, int maxEstantes, int capacidadMaxEstantes, 
+            int cajasIniciales, int maxCajas, int carritosIniciales, int maxCarritos) {
         this.hora = hora;
         this.estantesIniciales = estantesIniciales;
         this.maxEstantes = maxEstantes;
@@ -46,5 +54,11 @@ public class Constants {
         this.maxCajas = maxCajas;
         this.carritosIniciales = carritosIniciales;
         this.maxCarritos = maxCarritos;
+        
+        this.retardoEstante = (int)(0.1 * hora * 1000);
+        this.retardoCaja = (int) (0.0168 * hora * 1000);
+        this.retardoGanancias = (int) (0.0083 * hora * 1000);
+        this.retardoDevCarrito = (int)(0.033 * hora * 1000);
+        this.retardoEmpleado = (int)(0.083 * hora * 1000);
     }
 }
