@@ -6,6 +6,7 @@ import Model.Cliente;
 import Model.Constants;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Semaphore;
 
 public class Window extends javax.swing.JFrame {
 
@@ -19,9 +20,11 @@ public class Window extends javax.swing.JFrame {
         this.setResizable(false);
         this.setVisible(true);
         k = Constants.shared();
-        k.cajasIniciales = 3;
-        k.carritosIniciales = 2;
-        k.estantesIniciales = 2;
+        k.prepare(5, 2, 4, 4, 3, 4, 2, 4);
+//        k.cajasIniciales = 3;
+//        k.carritosIniciales = 2;
+//        k.estantesIniciales = 2;
+//        k.hora = 5;
         gama = new Gama(this.estantesTxt, this.carritosTxt, this.cajasTxt, this.clientesColaTxt, 
             this.clientesSistemaTxt, this.horasLaboralesTxt, this.gananciasTxt, k);
         
@@ -163,6 +166,11 @@ public class Window extends javax.swing.JFrame {
         });
 
         importarBtn.setText("Importar");
+        importarBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                importarBtnActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -324,6 +332,10 @@ public class Window extends javax.swing.JFrame {
         
         start();
     }//GEN-LAST:event_startBtnActionPerformed
+
+    private void importarBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importarBtnActionPerformed
+        
+    }//GEN-LAST:event_importarBtnActionPerformed
     
     public void start(){
         TimerTask timerTask = new TimerTask()
@@ -338,7 +350,7 @@ public class Window extends javax.swing.JFrame {
              
          }
      };
-        
+       
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(timerTask, 0, 1000);
     }

@@ -24,23 +24,26 @@ public class Estante extends Thread{
     }
     
     @Override
-    public void run(){
-        //cliente.sleep
-        if(productos <= 0){
+    public void run() {
+        if (productos <= 0) {
             try {
-                sleep(5000);
+                sleep(Constants.shared().retardoEmpleado);
                 this.productos = 3;
             } catch (InterruptedException ex) {
-                Logger.getLogger(Estante.class.getName()).log(Level.SEVERE, null, ex);
+                ex.printStackTrace();
             }
         }
-        while(hayClienteCola()){
-           gama.pasarEstante(colaEstante.poll(), this);
+
+        while (hayClienteCola()) {
+            gama.pasarEstante(colaEstante.poll(), this);
         }
-        
-        
+
     }
     
+    /**
+     * Verifica si hay cliente en cola para pasar al estante
+     * @return true si hay cola
+     */
     public boolean hayClienteCola(){
         return colaEstante.size() > 0;
     }

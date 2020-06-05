@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 public class Cliente extends Thread{
     public int id;
     public int cesta;
+    public int cantProductos;
     Gama gama;
     
     public Cliente(int id, Gama gama){
@@ -32,9 +33,26 @@ public class Cliente extends Thread{
         for(Estante est : gama.estantes){
             est.colaEstante.add(this);
             if(!est.isAlive()){
-                est.start();
+                (new Thread(est)).start();         
             }
             this.suspend(); //Pausamos el hilo hasta que termine de recorrer el estante
         }
+        
+        try {
+            gama.semCajasR.acquire();
+            System.out.println("El cliente " + id + " va a pagar");
+            Cajero caja = gama.colaCajas.poll();
+            caja.cl = this;
+            if(!caja.isAlive()){
+                (new Thread(caja)).start();
+            }
+            this.suspend();
+            gama.salirCliente(this);
+            
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+        
+        
     }
 }
