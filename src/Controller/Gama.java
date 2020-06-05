@@ -5,6 +5,7 @@
  */
 package Controller;
 
+import Model.Cajero;
 import Model.Cliente;
 import Model.Constants;
 import Model.Estante;
@@ -31,13 +32,11 @@ public class Gama {
     public HashSet<Cliente> clientesSistema = new HashSet<>();
     
     //Cola para cajas registradoras
-    Queue colaCajas = new LinkedList<>();
-    Semaphore semCajasR;
+    public Queue<Cajero> colaCajas = new LinkedList<>();
+    public Semaphore semCajasR; 
     
     //Estantes
-//    int estantes;
     public List<Estante> estantes;
-    Semaphore semEstantes;
     
     int ganancias;
     int carritos;
@@ -59,7 +58,11 @@ public class Gama {
             JTextField clientesColaTxt, JTextField clientesSistemaTxt, JTextField horasLaboralesTxt, JTextField gananciasTxt, Constants k){
         this.k = k;
         this.carritos = k.carritosIniciales;
+        
         this.cajas = k.cajasIniciales;
+        for(int i = 0; i < cajas; i++){
+            colaCajas.add(new Cajero(this));
+        }
         
         estantes = new ArrayList<>();
         for(int i = 0; i < k.estantesIniciales; i++){
@@ -69,7 +72,6 @@ public class Gama {
         
         this.semColaEntrar = new Semaphore(k.carritosIniciales);
         this.semCajasR = new Semaphore(k.cajasIniciales);
-        this.semEstantes = new Semaphore(1);
         
         this.estantesTxt = estantesTxt;
         this.carritosTxt = carritosTxt;
@@ -81,15 +83,6 @@ public class Gama {
     }
     
     /**
-     * Agrega un nuevo cliente a la cola y actualiza el TextField
-     * @param cliente : cliente a agregar
-     */
-    public void nuevoCliente(Cliente cliente){
-        colaClientes.add(cliente);
-        clientesColaTxt.setText(""+colaClientes.size());
-    }
-    
-    /**
      * Comprueba si hay clientes esperando entrar
      * @return true si hay clientes en espera
      */
@@ -98,7 +91,8 @@ public class Gama {
     }
     
     /**
-     * En caso de haber, adentra un cliente al Gama
+     * Maneja la llegada de un cliente al sistema
+     * @param cliente
      */
     public void entrarSistema(Cliente cliente){
         try {
@@ -130,17 +124,24 @@ public class Gama {
         }
     }
     
+    /**
+     * Maneja el transcurso del cliente al llegar a un estante
+     * @param cl : cliente
+     * @param est : estante actual
+     */
     public void pasarEstante(Cliente cl, Estante est){
         if(cl == null) return;
         
         try {
             est.semaforo.acquire();
             System.out.println("El cliente " + cl.id + " esta en el estante " + est.id);
-            est.sleep(6000);    //Modificar basandonos en la hora
+            int retardoEstante = k.retardoEstante;
+            est.sleep(retardoEstante);    
             
             System.out.println("Hay " + est.productos + " productos en el estante " + est.id);
             //Todos los productos que va a agarrar
             int totalProductos = randomNum(est.productos);
+            cl.cantProductos = totalProductos;
             
             System.out.println("El cliente " + cl.id + " agarro " + totalProductos + " productos");
             est.productos -= totalProductos;
@@ -161,7 +162,56 @@ public class Gama {
         }
     }
     
+    /**
+     * Maneja el transcurso del cliente en la caja registradora
+     * @param cl : cliente
+     * @param ca : cajero
+     */
+    public void pagar(Cliente cl, Cajero ca){
+        if(cl == null) return;
+        int retardoCaja = (int) (cl.cantProductos * k.retardoCaja);
+        try {
+            ca.sleep(retardoCaja);
+            System.out.println("El cliente " + cl.id + " pago un total de $" + cl.cesta);
+            this.ganancias += cl.cesta;
+            System.out.println("El mercado ha hecho $" + ganancias);
+            cl.resume();
+            semCajasR.release();
+            ca.sleep(k.retardoGanancias);
+            ca.cl = null;
+            colaCajas.add(ca);
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    /**
+     * Maneja la salida del cliente del sistema
+     * @param cl : cliente
+     */
+    public void salirCliente(Cliente cl){
+        try {
+            System.out.println("El cliente " + cl.id + " entrega el carrito");
+            cl.sleep(k.retardoDevCarrito);
+            System.out.println("El cliente " + cl.id + " salio del Gama");
+            semColaEntrar.release();
+            clientesSistema.remove(cl);
+            clientesSistemaTxt.setText(""+clientesSistema.size());
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Gama.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+    
+    /**
+     * Genera un numero aleatorio
+     * @param max : limite superior del numero
+     * @return entero aleatorio
+     */
     public int randomNum(int max) {
+        if(max == 1){
+            return (int) (Math.random() * 2);
+        }
         return (int) (Math.random() * max);
     }
 }
