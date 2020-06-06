@@ -32,6 +32,7 @@ public class Constants {
     public int retardoGanancias;
     public int retardoDevCarrito;
     public int retardoEmpleado;
+    public int retardoJefe;
     
     //Singleton
     private static final Constants shared = new Constants();
@@ -60,5 +61,6 @@ public class Constants {
         this.retardoGanancias = (int) (0.0083 * hora * 1000);
         this.retardoDevCarrito = (int)(0.033 * hora * 1000);
         this.retardoEmpleado = (int)(0.083 * hora * 1000);
+        this.retardoJefe = (int)(0.025 * hora * 1000);
     }
 }

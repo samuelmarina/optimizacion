@@ -9,6 +9,7 @@ import Model.Cajero;
 import Model.Cliente;
 import Model.Constants;
 import Model.Estante;
+import Model.Jefe;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -38,10 +39,10 @@ public class Gama {
     //Estantes
     public List<Estante> estantes;
     
-    int ganancias;
-    int carritos;
-    int cajas;
-    double horasLaborales;
+    public int ganancias;
+    public int carritos;
+    public int cajas;
+    public double horasLaborales;
     
     //TextFields
     public JTextField estantesTxt;
@@ -178,6 +179,7 @@ public class Gama {
             cl.resume();
             semCajasR.release();
             ca.sleep(k.retardoGanancias);
+            this.gananciasTxt.setText(""+ganancias);
             ca.cl = null;
             colaCajas.add(ca);
         } catch (InterruptedException ex) {
@@ -201,6 +203,11 @@ public class Gama {
             Logger.getLogger(Gama.class.getName()).log(Level.SEVERE, null, ex);
         }
         
+    }
+    
+    public void contarHoras(Jefe jefe){
+        this.horasLaborales += 0.02;
+        this.horasLaboralesTxt.setText(""+horasLaborales);
     }
     
     /**

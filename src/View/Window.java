@@ -4,6 +4,7 @@ package View;
 import Controller.Gama;
 import Model.Cliente;
 import Model.Constants;
+import Model.Jefe;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Semaphore;
@@ -20,11 +21,7 @@ public class Window extends javax.swing.JFrame {
         this.setResizable(false);
         this.setVisible(true);
         k = Constants.shared();
-        k.prepare(5, 2, 4, 4, 3, 4, 2, 4);
-//        k.cajasIniciales = 3;
-//        k.carritosIniciales = 2;
-//        k.estantesIniciales = 2;
-//        k.hora = 5;
+        k.prepare(1, 2, 4, 4, 3, 4, 2, 4);
         gama = new Gama(this.estantesTxt, this.carritosTxt, this.cajasTxt, this.clientesColaTxt, 
             this.clientesSistemaTxt, this.horasLaboralesTxt, this.gananciasTxt, k);
         
@@ -343,16 +340,18 @@ public class Window extends javax.swing.JFrame {
          int i = 0;
          public void run() 
          {
-             if(i == 3) this.cancel();
+//             if(i == 3) this.cancel();
              Cliente c = new Cliente(i, gama);
              c.start();
              i += 1;
              
          }
      };
-       
+        Jefe j = new Jefe(gama);
+        j.start();
         Timer timer = new Timer();
-        timer.scheduleAtFixedRate(timerTask, 0, 1000);
+        int ret = (int)(0.083 * k.hora * 1000);
+        timer.scheduleAtFixedRate(timerTask, 0, ret);
     }
     /**
      * @param args the command line arguments
