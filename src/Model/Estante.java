@@ -28,7 +28,7 @@ public class Estante extends Thread{
         if (productos <= 0) {
             try {
                 sleep(Constants.shared().retardoEmpleado);
-                this.productos = 3;
+                this.productos = 10;
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }

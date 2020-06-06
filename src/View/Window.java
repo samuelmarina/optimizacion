@@ -7,12 +7,15 @@ import Model.Constants;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Semaphore;
+import javax.swing.JOptionPane;
 
 public class Window extends javax.swing.JFrame {
 
     Gama gama;
     
     Constants k;
+    int carritos = 10; //Los valores iniciales pueden definirse o dependen de la entrada?
+    int cajas = 4;
     
     public Window() {
         initComponents();
@@ -20,7 +23,7 @@ public class Window extends javax.swing.JFrame {
         this.setResizable(false);
         this.setVisible(true);
         k = Constants.shared();
-        k.prepare(5, 2, 4, 4, 3, 4, 2, 4);
+        k.prepare(5, 2, 4, 4, 4, 4, 10, 20);
 //        k.cajasIniciales = 3;
 //        k.carritosIniciales = 2;
 //        k.estantesIniciales = 2;
@@ -73,12 +76,22 @@ public class Window extends javax.swing.JFrame {
 
         estantesPlusBtn.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         estantesPlusBtn.setText("+");
+        estantesPlusBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                estantesPlusBtnActionPerformed(evt);
+            }
+        });
 
         jLabel2.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         jLabel2.setText("Carritos");
 
         carritosMinusBtn.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         carritosMinusBtn.setText("-");
+        carritosMinusBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                carritosMinusBtnActionPerformed(evt);
+            }
+        });
 
         carritosTxt.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         carritosTxt.setText("0");
@@ -91,12 +104,22 @@ public class Window extends javax.swing.JFrame {
 
         carritosPlusBtn.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         carritosPlusBtn.setText("+");
+        carritosPlusBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                carritosPlusBtnActionPerformed(evt);
+            }
+        });
 
         jLabel3.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         jLabel3.setText("Cajas");
 
         cajasMinusBtn.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         cajasMinusBtn.setText("-");
+        cajasMinusBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cajasMinusBtnActionPerformed(evt);
+            }
+        });
 
         cajasTxt.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         cajasTxt.setText("0");
@@ -109,6 +132,11 @@ public class Window extends javax.swing.JFrame {
 
         cajasPlusBtn.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         cajasPlusBtn.setText("+");
+        cajasPlusBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cajasPlusBtnActionPerformed(evt);
+            }
+        });
 
         jLabel4.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         jLabel4.setText("Clientes en Cola");
@@ -226,7 +254,7 @@ public class Window extends javax.swing.JFrame {
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(cajasPlusBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                                             .addComponent(jLabel3))))))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap(20, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(8, 8, 8)
                         .addComponent(gananciasTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -329,13 +357,38 @@ public class Window extends javax.swing.JFrame {
     }//GEN-LAST:event_gananciasTxtActionPerformed
 
     private void startBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startBtnActionPerformed
-        
-        start();
+        start();       
+        carritosTxt.setText(Integer.toString(carritos));
+        cajasTxt.setText(Integer.toString(cajas));
     }//GEN-LAST:event_startBtnActionPerformed
 
     private void importarBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importarBtnActionPerformed
         
     }//GEN-LAST:event_importarBtnActionPerformed
+
+    private void carritosPlusBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_carritosPlusBtnActionPerformed
+        
+        if(!gama.masCarritos()) JOptionPane.showMessageDialog(null, "Llegó al máximo de carritos");
+    }//GEN-LAST:event_carritosPlusBtnActionPerformed
+
+    private void carritosMinusBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_carritosMinusBtnActionPerformed
+
+        if(!gama.menosCarritos()) JOptionPane.showMessageDialog(null, "Llegó al mínimo de carritos");
+    }//GEN-LAST:event_carritosMinusBtnActionPerformed
+
+    private void estantesPlusBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_estantesPlusBtnActionPerformed
+        // TODO add your handling code here:
+    
+    }//GEN-LAST:event_estantesPlusBtnActionPerformed
+
+    private void cajasPlusBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cajasPlusBtnActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cajasPlusBtnActionPerformed
+
+    private void cajasMinusBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cajasMinusBtnActionPerformed
+        // TODO add your handling code here:
+        if(!gama.menosCajas()) JOptionPane.showMessageDialog(null, "Llegó al mínimo de cajas");;
+    }//GEN-LAST:event_cajasMinusBtnActionPerformed
     
     public void start(){
         TimerTask timerTask = new TimerTask()
@@ -343,7 +396,7 @@ public class Window extends javax.swing.JFrame {
          int i = 0;
          public void run() 
          {
-             if(i == 3) this.cancel();
+             if(i == 10) this.cancel();
              Cliente c = new Cliente(i, gama);
              c.start();
              i += 1;

@@ -40,7 +40,9 @@ public class Gama {
     
     int ganancias;
     int carritos;
+    int maxCarritos;
     int cajas;
+    int maxCajas;
     double horasLaborales;
     
     //TextFields
@@ -58,8 +60,10 @@ public class Gama {
             JTextField clientesColaTxt, JTextField clientesSistemaTxt, JTextField horasLaboralesTxt, JTextField gananciasTxt, Constants k){
         this.k = k;
         this.carritos = k.carritosIniciales;
+        this.maxCarritos = k.maxCarritos;
         
         this.cajas = k.cajasIniciales;
+        this.maxCajas = k.maxCajas;
         for(int i = 0; i < cajas; i++){
             colaCajas.add(new Cajero(this));
         }
@@ -175,6 +179,7 @@ public class Gama {
             System.out.println("El cliente " + cl.id + " pago un total de $" + cl.cesta);
             this.ganancias += cl.cesta;
             System.out.println("El mercado ha hecho $" + ganancias);
+            gananciasTxt.setText(Integer.toString(ganancias));
             cl.resume();
             semCajasR.release();
             ca.sleep(k.retardoGanancias);
@@ -213,5 +218,64 @@ public class Gama {
             return (int) (Math.random() * 2);
         }
         return (int) (Math.random() * max);
+    }
+    
+    
+    public boolean masCarritos(){
+        if(carritos < maxCarritos){
+            semColaEntrar.release();
+            carritos+=1;
+            System.out.println("Ahora quedan "+ carritos + " en el supermercado");
+            return true;
+        }
+        return false;
+    }
+    
+    public boolean menosCarritos(){
+        if(carritos > 10){
+            try {
+                semColaEntrar.acquire();
+                carritos-=1;
+                System.out.println("Ahora quedan "+ carritos + " en el supermercado");
+                return true;
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }       
+        }
+        return false;
+    }
+    
+    
+    public boolean masCajas(){
+        if(cajas < maxCajas){
+            colaCajas.add(new Cajero(this));
+            semCajasR.release();
+            cajas += 1;
+            cajasTxt.setText(Integer.toString(cajas));
+            return true;
+        }
+        return false;
+    }
+    
+    
+
+    public boolean menosCajas() {
+        if (cajas > 4) {
+            while (true) {
+                if (colaCajas.size() > 0) {
+                    try {
+                        colaCajas.poll();
+                        semCajasR.acquire();
+                        cajas -= 1;
+                        cajasTxt.setText(Integer.toString(cajas));
+                        return true;
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                    
+                }
+            }
+        }
+        return false;
     }
 }
