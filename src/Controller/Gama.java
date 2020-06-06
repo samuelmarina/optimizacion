@@ -53,7 +53,12 @@ public class Gama {
     public JTextField horasLaboralesTxt;
     public JTextField gananciasTxt;
     
+    //Constantes
     public Constants k;
+    
+    //Flags
+    public boolean flagCarrito = false;
+    public boolean flagCaja = false;
     
     public Gama(JTextField estantesTxt, JTextField carritosTxt, JTextField cajasTxt,
             JTextField clientesColaTxt, JTextField clientesSistemaTxt, JTextField horasLaboralesTxt, JTextField gananciasTxt, Constants k){
@@ -176,12 +181,20 @@ public class Gama {
             System.out.println("El cliente " + cl.id + " pago un total de $" + cl.cesta);
             this.ganancias += cl.cesta;
             System.out.println("El mercado ha hecho $" + ganancias);
+//            gananciasTxt.setText(Integer.toString(ganancias));
             cl.resume();
-            semCajasR.release();
+//            semCajasR.release();
             ca.sleep(k.retardoGanancias);
             this.gananciasTxt.setText(""+ganancias);
             ca.cl = null;
-            colaCajas.add(ca);
+            if(!flagCaja){
+                colaCajas.add(ca);
+                semCajasR.release();
+            }
+            else{
+                flagCaja = false;
+            }
+            
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
@@ -196,17 +209,30 @@ public class Gama {
             System.out.println("El cliente " + cl.id + " entrega el carrito");
             cl.sleep(k.retardoDevCarrito);
             System.out.println("El cliente " + cl.id + " salio del Gama");
-            semColaEntrar.release();
+            if(!flagCarrito){
+                semColaEntrar.release();
+            }else{
+                flagCarrito = false;
+            }
             clientesSistema.remove(cl);
             clientesSistemaTxt.setText(""+clientesSistema.size());
         } catch (InterruptedException ex) {
-            Logger.getLogger(Gama.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
         
     }
     
+    /**
+     * Actualiza el contador de horas laborales
+     * @param jefe : hilo que corre en bucle
+     */
     public void contarHoras(Jefe jefe){
-        this.horasLaborales += 0.02;
+        if(horasLaborales >= 8.0){
+            this.horasLaborales = 0;
+            this.ganancias = 0;
+        }else{
+           this.horasLaborales += 0.02; 
+        }
         this.horasLaboralesTxt.setText(""+horasLaborales);
     }
     
@@ -220,5 +246,105 @@ public class Gama {
             return (int) (Math.random() * 2);
         }
         return (int) (Math.random() * max);
+    }
+    
+    /**
+     * Agrega un permiso al semaforo para entrar al sistema
+     * @return true si no se ha alcanzado la cantidad max 
+     * de carritos
+     */
+    public boolean agregarCarrito(){
+        if(carritos < k.maxCarritos){
+            semColaEntrar.release();
+            carritos+=1;
+            this.carritosTxt.setText(""+carritos);
+            System.out.println("Ahora quedan "+ carritos + " en el supermercado");
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Elimina un permiso del semaforo para entrar al sistema
+     * @return true si la cantidad de carritos disponibles es
+     * superior a la cantidad de carritos iniciales
+     */
+    public boolean eliminarCarrito(){
+        if(carritos > k.carritosIniciales){
+            try {
+                if(semColaEntrar.getQueueLength() == 0){
+                    semColaEntrar.acquire();
+                    colaCajas.poll();
+                }
+                else{
+//                    System.out.println("AaaaaaaaaaaaaAaaaaaaaaaaaaAaaaaaaaaaaaaAaaaaaaaaaaaaAaaaaaaaaaaaaAaaaaaaaaaaaaAaaaaaaaaaaaaAaaaaaaaaaaaaAaaaaaaaaaaaaAaaaaaaaaaaaaAaaaaaaaaaaaaAaaaaaaaaaaaaAaaaaaaaaaaaa");
+                    flagCarrito = true;
+                }
+                carritos-=1;
+                this.carritosTxt.setText(""+carritos);
+                System.out.println("Ahora quedan "+ carritos + " en el supermercado");
+                return true;
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }       
+        }
+        return false;
+    }
+    
+    /**
+     * Agrega un objeto de tipo Cajero a la cola y agrega
+     * un nuevo permiso al semaforo de cajeros
+     * @return true si no se ha alcanzado el numero maximo
+     * de cajas por agregar
+     */
+    public boolean agregarCaja(){
+        if(cajas < k.maxCajas){
+            colaCajas.add(new Cajero(this));
+            semCajasR.release();
+            cajas += 1;
+            cajasTxt.setText(Integer.toString(cajas));
+            return true;
+        }
+        return false;
+    }
+    
+    
+    /**
+     * Elimina un permiso del semaforo de los cajeros
+     * @return true si no se ha alcanzado el numero minimo
+     * de cajas por eliminar
+     */
+    public boolean eliminarCaja() {
+        if (cajas > k.cajasIniciales) {
+            try{
+                if(semCajasR.getQueueLength() == 0){
+                    semCajasR.acquire();
+                    
+                }
+                else{
+                    this.flagCaja = true;
+                }
+                cajas -= 1;
+                cajasTxt.setText(Integer.toString(cajas));
+                return true;
+            } catch (InterruptedException ex){
+                ex.printStackTrace();
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Agrega un nuevo objeto de tipo estante a la lista
+     * @return true si no se ha alcanzado la cant max de 
+     * estantes 
+     */
+    public boolean agregarEstante(){
+        if(estantes.size() < k.maxEstantes){
+            estantes.add(new Estante(this, estantes.size()));
+            this.estantesTxt.setText(""+estantes.size());
+            return true;
+        }
+        return false;
     }
 }

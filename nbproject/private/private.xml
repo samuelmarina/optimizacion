@@ -5,7 +5,7 @@
             <url>src/Model/Estante.java</url>
             <bookmark id="1">
                 <name/>
-                <line>38</line>
+                <line>37</line>
                 <key/>
             </bookmark>
         </file>
@@ -13,8 +13,8 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/Users/SamuelLMiller/Documents/Optimizacion/src/Controller/Optimizacion.java</file>
-            <file>file:/Users/SamuelLMiller/Documents/Optimizacion/src/Controller/Gama.java</file>
             <file>file:/Users/SamuelLMiller/Documents/Optimizacion/src/View/Window.java</file>
+            <file>file:/Users/SamuelLMiller/Documents/Optimizacion/src/Model/Jefe.java</file>
             <file>file:/Users/SamuelLMiller/Documents/Optimizacion/src/Model/Constants.java</file>
             <file>file:/Users/SamuelLMiller/Documents/Optimizacion/src/Model/Estante.java</file>
             <file>file:/Users/SamuelLMiller/Documents/Optimizacion/src/Model/Cliente.java</file>

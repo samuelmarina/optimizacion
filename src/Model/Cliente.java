@@ -30,12 +30,14 @@ public class Cliente extends Thread{
         gama.entrarSistema(this);
         
         //Pasamos por todos los estantes
-        for(Estante est : gama.estantes){
-            est.colaEstante.add(this);
-            if(!est.isAlive()){
-                (new Thread(est)).start();         
+        int currNumEstantes = gama.estantes.size();
+        for (int i = 0; i < currNumEstantes; i++) {
+            Estante current = gama.estantes.get(i);
+            current.colaEstante.add(this);
+            if(!current.isAlive()){
+                (new Thread(current)).start();
             }
-            this.suspend(); //Pausamos el hilo hasta que termine de recorrer el estante
+            this.suspend();
         }
         
         try {
