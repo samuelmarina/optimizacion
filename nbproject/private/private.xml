@@ -12,13 +12,11 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/SamuelLMiller/Documents/Optimizacion/src/Controller/Optimizacion.java</file>
-            <file>file:/Users/SamuelLMiller/Documents/Optimizacion/src/View/Window.java</file>
-            <file>file:/Users/SamuelLMiller/Documents/Optimizacion/src/Model/Jefe.java</file>
-            <file>file:/Users/SamuelLMiller/Documents/Optimizacion/src/Model/Constants.java</file>
-            <file>file:/Users/SamuelLMiller/Documents/Optimizacion/src/Model/Estante.java</file>
-            <file>file:/Users/SamuelLMiller/Documents/Optimizacion/src/Model/Cliente.java</file>
-            <file>file:/Users/SamuelLMiller/Documents/Optimizacion/src/Model/Cajero.java</file>
+            <file>file:/C:/Users/Mari/Desktop/optimizacion/src/Controller/Gama.java</file>
+            <file>file:/C:/Users/Mari/Desktop/optimizacion/src/Model/Estante.java</file>
+            <file>file:/C:/Users/Mari/Desktop/optimizacion/src/Model/Constants.java</file>
+            <file>file:/C:/Users/Mari/Desktop/optimizacion/src/View/Window.java</file>
+            <file>file:/C:/Users/Mari/Desktop/optimizacion/src/Model/Cliente.java</file>
         </group>
     </open-files>
 </project-private>
