@@ -396,7 +396,7 @@ public class Window extends javax.swing.JFrame {
     private void startBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startBtnActionPerformed
         
         k = Constants.shared();
-        k.prepare(1, 2, 10, 10, 2, 4, 2, 10);
+        k.prepare(1, 1, 3, 3, 4, 8, 10, 20);
         gama = new Gama(this.estantesTxt, this.carritosTxt, this.cajasTxt, this.clientesColaTxt, 
             this.clientesSistemaTxt, this.horasLaboralesTxt, this.gananciasTxt, k);
         carritosTxt.setText(""+k.carritosIniciales);
