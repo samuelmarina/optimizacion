@@ -7,8 +7,13 @@ import Model.Constants;
 import Model.Jefe;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.Semaphore;
 import javax.swing.JOptionPane;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import javax.swing.JFileChooser;
 
 public class Window extends javax.swing.JFrame {
 
@@ -20,15 +25,14 @@ public class Window extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(this);
         this.setResizable(false);
-        this.setVisible(true);
-        k = Constants.shared();
-        k.prepare(1, 2, 10, 10, 2, 4, 2, 10);
-        gama = new Gama(this.estantesTxt, this.carritosTxt, this.cajasTxt, this.clientesColaTxt, 
-            this.clientesSistemaTxt, this.horasLaboralesTxt, this.gananciasTxt, k);
-        carritosTxt.setText(""+k.carritosIniciales);
-        cajasTxt.setText(""+k.cajasIniciales);
-        estantesTxt.setText(""+k.estantesIniciales);
+        this.setVisible(true);    
         
+        //Inhabilitamos todos los botones de +/- al comienzo
+        this.estantesPlusBtn.setEnabled(false);
+        this.carritosMinusBtn.setEnabled(false);
+        this.carritosPlusBtn.setEnabled(false);
+        this.cajasMinusBtn.setEnabled(false);
+        this.cajasPlusBtn.setEnabled(false);
     }
 
     @SuppressWarnings("unchecked")
@@ -57,14 +61,22 @@ public class Window extends javax.swing.JFrame {
         gananciasTxt = new javax.swing.JTextField();
         startBtn = new javax.swing.JButton();
         importarBtn = new javax.swing.JButton();
+        rutaTxt = new javax.swing.JTextField();
+        abrirArchivoBtn = new javax.swing.JButton();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
         jLabel1.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         jLabel1.setText("Estantes");
 
         estantesTxt.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
-        estantesTxt.setText("0");
+        estantesTxt.setText("1");
         estantesTxt.setEnabled(false);
         estantesTxt.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -92,7 +104,7 @@ public class Window extends javax.swing.JFrame {
         });
 
         carritosTxt.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
-        carritosTxt.setText("0");
+        carritosTxt.setText("10");
         carritosTxt.setEnabled(false);
         carritosTxt.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -120,7 +132,7 @@ public class Window extends javax.swing.JFrame {
         });
 
         cajasTxt.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
-        cajasTxt.setText("0");
+        cajasTxt.setText("4");
         cajasTxt.setEnabled(false);
         cajasTxt.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -184,132 +196,166 @@ public class Window extends javax.swing.JFrame {
             }
         });
 
-        startBtn.setText("Comenzar");
+        startBtn.setText("Comenzar sin archivo");
         startBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 startBtnActionPerformed(evt);
             }
         });
 
-        importarBtn.setText("Importar");
+        importarBtn.setText("Comenzar con archivo");
         importarBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 importarBtnActionPerformed(evt);
             }
         });
 
+        rutaTxt.setText("Ingrese la ruta del archivo a importar");
+        rutaTxt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rutaTxtActionPerformed(evt);
+            }
+        });
+
+        abrirArchivoBtn.setText("Abrir archivo");
+        abrirArchivoBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                abrirArchivoBtnActionPerformed(evt);
+            }
+        });
+
+        jLabel8.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        jLabel8.setText("Control del jefe");
+
+        jLabel9.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        jLabel9.setText("Clientes en la simulación");
+
+        jLabel10.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        jLabel10.setText("Control de unidades");
+
+        jLabel11.setFont(new java.awt.Font("Tahoma", 0, 26)); // NOI18N
+        jLabel11.setText("Simulador de clientes en supermercados Gama");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addGap(49, 49, 49)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel7)
+                            .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 265, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 276, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel11)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel6)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel4)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(clientesColaTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(59, 59, 59)
+                                        .addComponent(jLabel5)))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(clientesSistemaTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(horasLaboralesTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addGap(8, 8, 8)
-                                        .addComponent(clientesColaTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(jLabel4)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                                .addGap(8, 8, 8)
-                                                .addComponent(estantesTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(estantesPlusBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addComponent(jLabel1))
-                                        .addGap(64, 64, 64)
-                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                                .addComponent(carritosMinusBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(carritosTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(carritosPlusBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                                .addGap(38, 38, 38)
-                                                .addComponent(jLabel2))
-                                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                                .addGap(8, 8, 8)
-                                                .addComponent(clientesSistemaTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addComponent(jLabel5))))
-                                .addGap(34, 34, 34)
+                                        .addComponent(estantesTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(estantesPlusBtn)
+                                        .addGap(78, 78, 78)
+                                        .addComponent(carritosMinusBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jLabel1))
+                                .addGap(18, 18, 18)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addGap(8, 8, 8)
-                                        .addComponent(horasLaboralesTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(jLabel6)
+                                        .addComponent(carritosTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(carritosPlusBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(cajasMinusBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
                                     .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(cajasMinusBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jLabel2)
+                                        .addGap(190, 190, 190)))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel3)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(cajasTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(cajasPlusBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(startBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                                .addComponent(cajasTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(cajasPlusBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addComponent(jLabel3))))))
-                        .addContainerGap(20, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(8, 8, 8)
-                        .addComponent(gananciasTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(315, 315, 315)
-                        .addComponent(importarBtn)
-                        .addGap(18, 18, 18)
-                        .addComponent(startBtn)
-                        .addGap(37, 37, 37))))
+                                                .addComponent(jLabel7)
+                                                .addGap(33, 33, 33)
+                                                .addComponent(gananciasTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addComponent(abrirArchivoBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(rutaTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addGap(18, 18, 18)
+                                        .addComponent(importarBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                        .addContainerGap(85, Short.MAX_VALUE))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(estantesTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(estantesPlusBtn)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(carritosTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(carritosPlusBtn)
-                            .addComponent(carritosMinusBtn)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(cajasTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cajasPlusBtn)
-                            .addComponent(cajasMinusBtn))))
-                .addGap(44, 44, 44)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(clientesColaTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(clientesSistemaTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(horasLaboralesTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
-                .addComponent(jLabel7)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(startBtn)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(gananciasTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(importarBtn)))
-                .addGap(24, 24, 24))
+                .addGap(61, 61, 61)
+                .addComponent(jLabel11)
+                .addGap(51, 51, 51)
+                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel3))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(estantesTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(estantesPlusBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(carritosMinusBtn)
+                    .addComponent(carritosTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cajasTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(carritosPlusBtn)
+                    .addComponent(cajasMinusBtn)
+                    .addComponent(cajasPlusBtn))
+                .addGap(33, 33, 33)
+                .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(35, 35, 35)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(clientesColaTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel5)
+                    .addComponent(clientesSistemaTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(gananciasTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(horasLaboralesTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6))
+                .addGap(78, 78, 78)
+                .addComponent(startBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(abrirArchivoBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(rutaTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(importarBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(38, 38, 38))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -320,7 +366,7 @@ public class Window extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -355,20 +401,35 @@ public class Window extends javax.swing.JFrame {
     }//GEN-LAST:event_gananciasTxtActionPerformed
 
     private void startBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startBtnActionPerformed
-        start();       
-
+        //Se inicializa el programa con las constantes dadas en el ejercicio
+        k = Constants.shared();
+        k.prepare(5, 1, 3, 10, 4, 10, 10, 20);
+//        k.prepare(1, 1, 3, 3, 4, 8, 10, 20);
+        gama = new Gama(this.estantesTxt, this.carritosTxt, this.cajasTxt, this.clientesColaTxt, 
+            this.clientesSistemaTxt, this.horasLaboralesTxt, this.gananciasTxt, k);
+        carritosTxt.setText(""+k.carritosIniciales);
+        cajasTxt.setText(""+k.cajasIniciales);
+        estantesTxt.setText(""+k.estantesIniciales);
+        start(); 
+        
     }//GEN-LAST:event_startBtnActionPerformed
 
     private void importarBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importarBtnActionPerformed
         
+        if(cargarArchivo()){
+            start();
+        }
+        
     }//GEN-LAST:event_importarBtnActionPerformed
 
     private void carritosPlusBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_carritosPlusBtnActionPerformed
-        
+            
         if(!gama.agregarCarrito()) JOptionPane.showMessageDialog(null, "Llegó al máximo de carritos");
+        
     }//GEN-LAST:event_carritosPlusBtnActionPerformed
 
     private void carritosMinusBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_carritosMinusBtnActionPerformed
+        
         Thread aux = new Thread(){
             @Override
             public void run(){
@@ -376,24 +437,103 @@ public class Window extends javax.swing.JFrame {
             }
         };
         aux.start();
-//        if(!gama.eliminarCarrito()) JOptionPane.showMessageDialog(null, "Llegó al mínimo de carritos");
+        
+        if(!gama.eliminarCarrito()) JOptionPane.showMessageDialog(null, "Llegó al mínimo de carritos");
     }//GEN-LAST:event_carritosMinusBtnActionPerformed
 
     private void estantesPlusBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_estantesPlusBtnActionPerformed
+        
         gama.agregarEstante();
+//        if(!); JOptionPane.showMessageDialog(null, "Llego al maximo de estantes");
     
     }//GEN-LAST:event_estantesPlusBtnActionPerformed
 
     private void cajasPlusBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cajasPlusBtnActionPerformed
+       
         if(!gama.agregarCaja()) JOptionPane.showMessageDialog(null, "Llego al maximo de cajas");
+        
     }//GEN-LAST:event_cajasPlusBtnActionPerformed
 
     private void cajasMinusBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cajasMinusBtnActionPerformed
-        // TODO add your handling code here:
-        if(!gama.eliminarCaja()) JOptionPane.showMessageDialog(null, "Llegó al mínimo de cajas");;
+
+        if(!gama.eliminarCaja()) JOptionPane.showMessageDialog(null, "Llegó al mínimo de cajas");
+        
     }//GEN-LAST:event_cajasMinusBtnActionPerformed
+
+    private void rutaTxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rutaTxtActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_rutaTxtActionPerformed
+
+    private void abrirArchivoBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_abrirArchivoBtnActionPerformed
+        
+        // TODO add your handling code here:
+        JFileChooser jf = new JFileChooser();
+        jf.showOpenDialog(this);
+        File archivo = jf.getSelectedFile();
+        if(archivo != null){
+            rutaTxt.setText(archivo.getAbsolutePath());
+        }else{
+            JOptionPane.showMessageDialog(null, "No se pudo abrir el archivo seleccionado");
+        }
+        
+    }//GEN-LAST:event_abrirArchivoBtnActionPerformed
     
+    /**
+     * Utiliza un txt con cierto formato para cargar las 
+     * constantes del programa
+     */
+    public boolean cargarArchivo() {
+        
+        String archivo = rutaTxt.getText();
+        try {
+
+            BufferedReader in = new BufferedReader(new FileReader(archivo));
+
+            int horasCargadas = Integer.parseInt(in.readLine());
+            int estantesInicialesCargados = Integer.parseInt(in.readLine());
+            int maxEstantesCargados = Integer.parseInt(in.readLine());
+            int capacidadMaxCargada = Integer.parseInt(in.readLine());
+            int cajasInicialesCargadas = Integer.parseInt(in.readLine());
+            int maxCajasCargadas = Integer.parseInt(in.readLine());
+            int carritosInicialesCargados = Integer.parseInt(in.readLine());
+            int maxCarritosCargados = Integer.parseInt(in.readLine());
+
+            k = Constants.shared();
+            k.prepare(horasCargadas, estantesInicialesCargados, maxEstantesCargados, capacidadMaxCargada, cajasInicialesCargadas, maxCajasCargadas, carritosInicialesCargados, maxCarritosCargados);
+            gama = new Gama(this.estantesTxt, this.carritosTxt, this.cajasTxt, this.clientesColaTxt,
+                    this.clientesSistemaTxt, this.horasLaboralesTxt, this.gananciasTxt, k);
+            carritosTxt.setText("" + k.carritosIniciales);
+            cajasTxt.setText("" + k.cajasIniciales);
+            estantesTxt.setText("" + k.estantesIniciales);
+
+
+        } catch (FileNotFoundException ex) {
+            JOptionPane.showMessageDialog(null, "Hubo un error al cargar el archivo, intente de nuevo.");
+            return false;
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, "Hubo un error al cargar el archivo, intente de nuevo.");
+            return false;
+        }
+        
+        return true;
+    
+    }
+    
+    /**
+     * Da inicio a la llegada de clientes al Gama
+     */
     public void start(){
+        this.estantesPlusBtn.setEnabled(true);
+        this.carritosMinusBtn.setEnabled(true);
+        this.carritosPlusBtn.setEnabled(true);
+        this.cajasMinusBtn.setEnabled(true);
+        this.cajasPlusBtn.setEnabled(true);
+        
+        this.abrirArchivoBtn.setEnabled(false);
+        startBtn.setEnabled(false);
+        importarBtn.setEnabled(false);
+        rutaTxt.setEnabled(false);
+        
         TimerTask timerTask = new TimerTask()
      {      
          int i = 0;
@@ -405,8 +545,10 @@ public class Window extends javax.swing.JFrame {
              
          }
      };
+        
         Jefe j = new Jefe(gama);
         j.start();
+        
         Timer timer = new Timer();
         int ret = (int)(0.083 * k.hora * 1000);
         timer.scheduleAtFixedRate(timerTask, 0, ret);
@@ -447,6 +589,7 @@ public class Window extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton abrirArchivoBtn;
     private javax.swing.JButton cajasMinusBtn;
     private javax.swing.JButton cajasPlusBtn;
     private javax.swing.JTextField cajasTxt;
@@ -461,13 +604,18 @@ public class Window extends javax.swing.JFrame {
     private javax.swing.JTextField horasLaboralesTxt;
     private javax.swing.JButton importarBtn;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JTextField rutaTxt;
     private javax.swing.JButton startBtn;
     // End of variables declaration//GEN-END:variables
 }

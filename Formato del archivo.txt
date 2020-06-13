@@ -1,0 +1,14 @@
+El modelo de .txt que lee la simulación cuenta con 8 lineas obligatorias, 
+cada una representa respectivamente:
+
+Tiempo, en segundos, que dura una hora en el programa.
+Número de estantes iniciales.
+Número máximo de estantes permitidos.
+Capacidad máxima de los estantes.
+Número de cajas registradoras operando.
+Número máximo de cajas registradoras permitidas.
+Número de carritos iniciales.
+Número máximo de carritos.
+
+Sin espacios y sin saltos de linea extra, tampoco deben haber letras. Son estrictamente números. 
+

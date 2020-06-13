@@ -277,7 +277,6 @@ public class Gama {
                     colaCajas.poll();
                 }
                 else{
-//                    System.out.println("AaaaaaaaaaaaaAaaaaaaaaaaaaAaaaaaaaaaaaaAaaaaaaaaaaaaAaaaaaaaaaaaaAaaaaaaaaaaaaAaaaaaaaaaaaaAaaaaaaaaaaaaAaaaaaaaaaaaaAaaaaaaaaaaaaAaaaaaaaaaaaaAaaaaaaaaaaaaAaaaaaaaaaaaa");
                     flagCarrito = true;
                 }
                 carritos-=1;
